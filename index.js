@@ -38,6 +38,7 @@ async function run () {
           const users = await cursor.toArray();
           res.send(users);
         })
+
         // Find One Document
         app.get('/users/:id', async (req, res) => {
           const id = req.params.id;
@@ -54,6 +55,22 @@ async function run () {
           console.log('Got new user', req.body);
           console.log('Added user', result);
           res.json(result);
+        })
+
+        // PUT API
+        app.put('/users/:id', async(req, res) => {
+          const id = req.params.id;
+          const updatedUser = req.body;
+          const filter = { _id: new objectId(id) };
+          const options = { upsert: true };
+          const updateDoc = {
+            $set: {
+              name: updatedUser.name, email: updatedUser.email
+            },
+          };
+          const result = await usersCollection.updateOne(filter, updateDoc, options);
+          res.json(result);
+          console.log('hitting update with id: ', id);
         })
         // Delete API
         app.delete('/users/:id', async (req, res) => {
